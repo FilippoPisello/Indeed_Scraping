@@ -16,11 +16,15 @@ def main(search: str | None = None, numb_pages: int = 1):
 
     i = 0
     job_ids = set()
-    for url in pages_urls:
+    print("Looking for job ids...")
+    for url in tqdm(pages_urls):
         soup = url_to_content(url)
         job_ids = job_ids.union(set(get_job_ids_from_soup(soup)))
+    else:
+        print(f"{len(job_ids)} job ids retrived correctly!\n")
 
     jobs_dict = {}
+    print("Downloading job posts information...")
     for index, job_id in enumerate(tqdm(job_ids)):
         job_url = job_id_to_url(job_id)
         job_page = requests.get(job_url)
@@ -29,6 +33,8 @@ def main(search: str | None = None, numb_pages: int = 1):
 
         if (index % 20 == 0) or ((index + 1) == len(jobs_dict)):
             save_jobs_to_json(jobs_dict, search, destination_folder)
+    else:
+        print_search_feedback(jobs_dict)
 
     return jobs_dict
 
@@ -70,3 +76,13 @@ def save_jobs_to_json(
 
     with open(output_file_name, "w", encoding="utf-8") as f:
         json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+
+def print_search_feedback(jobs_dict: dict[str, JobPost]) -> None:
+    valid_jobs = len([j.title for _, j in jobs_dict.items() if j.title is not None])
+    print(
+        f"""Research completed: retrived {valid_jobs} valid results
+          out of {len(jobs_dict)} total jobs identified."""
+    )
+
+
