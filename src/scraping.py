@@ -51,7 +51,7 @@ def main(
     pages_urls = url_to_pages(single_url, numb_pages)
 
     job_ids = set()
-    print("Looking for job ids...")
+    print("Looking for job ids across the results pages...")
     for url in tqdm(pages_urls):
         soup = url_to_content(url)
         job_ids = job_ids.union(set(get_job_ids_from_soup(soup)))
@@ -119,8 +119,8 @@ def save_jobs_to_json(
 def print_search_feedback(jobs_dict: dict[str, JobPost]) -> None:
     valid_jobs = len([j.title for _, j in jobs_dict.items() if j.title is not None])
     print(
-        f"""Research completed: retrived {valid_jobs} valid results
-          out of {len(jobs_dict)} total jobs identified."""
+        f"Research completed: retrived {valid_jobs} valid results",
+        f"out of {len(jobs_dict)} total jobs identified." "",
     )
 
 
