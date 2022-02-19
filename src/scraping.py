@@ -28,9 +28,7 @@ def main(search: str | None = None, numb_pages: int = 1):
         jobs_dict[job_id] = JobPost.from_job_soup(job_soup=job_soup, job_id=job_id)
 
         if (index % 20 == 0) or ((index + 1) == len(jobs_dict)):
-            json_data = {key: jobs_dict[key].__dict__ for key in jobs_dict}
-            with open(f"saved_jobs_{search}_.json", "w", encoding="utf-8") as f:
-                json.dump(json_data, f, ensure_ascii=False, indent=4)
+            save_jobs_to_json(jobs_dict, search, destination_folder)
 
     return jobs_dict
 
@@ -59,3 +57,16 @@ def get_job_ids_from_soup(soup) -> list[str]:
 
 def job_id_to_url(job_id: str) -> str:
     return f"https://uk.indeed.com/viewjob?jk={job_id}"
+
+
+def save_jobs_to_json(
+    jobs_dict: dict[str, JobPost], search: str, destination_folder: str | None
+) -> None:
+    json_data = {key: jobs_dict[key].__dict__ for key in jobs_dict}
+
+    output_file_name = f"saved_jobs_{search}_.json"
+    if destination_folder is not None:
+        output_file_name = destination_folder + output_file_name
+
+    with open(output_file_name, "w", encoding="utf-8") as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)
