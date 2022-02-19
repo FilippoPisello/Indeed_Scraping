@@ -74,6 +74,3 @@ class JobPost:
             return output
 
         return None
-
-
-def jobs_to_json(job_list:list[jobs])
