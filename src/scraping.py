@@ -7,7 +7,12 @@ from tqdm import tqdm
 from .job_post import JobPost
 
 
-def main(search: str | None = None, numb_pages: int = 1):
+def main(
+    search: str | None = None,
+    numb_pages: int = 1,
+    destination_folder: str | None = None,
+    drop_invalid: bool = True,
+) -> dict[str, JobPost]:
     if search is None:
         search = input("Please provide the search terms:\n")
 
@@ -35,6 +40,9 @@ def main(search: str | None = None, numb_pages: int = 1):
             save_jobs_to_json(jobs_dict, search, destination_folder)
     else:
         print_search_feedback(jobs_dict)
+
+    if drop_invalid:
+        drop_invalid_jobs(jobs_dict)
 
     return jobs_dict
 
@@ -86,3 +94,7 @@ def print_search_feedback(jobs_dict: dict[str, JobPost]) -> None:
     )
 
 
+def drop_invalid_jobs(jobs_dict: dict[str, JobPost]) -> None:
+    for job_id, job in jobs_dict.items():
+        if job.title is None:
+            del jobs_dict[job_id]
