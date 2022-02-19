@@ -13,13 +13,43 @@ def main(
     destination_folder: str | None = None,
     drop_invalid: bool = True,
 ) -> dict[str, JobPost]:
+    """Return a collection of scraped information from the website indeed.uk
+    given some search terms.
+
+    The search results are both saved into a json file and returned as a
+    dictionary in the form job_id : JobPost object.
+
+    Parameters
+    ----------
+    search : str | None, optional
+        The search term(s) to be used. For example 'Data Scientist'. If None,
+        an input window will ask for the search term during the function
+        execution. By default None.
+    numb_pages : int, optional
+        Number of result pages to be scraped. Each page contains roughly 15
+        results, by default 1. Note that an excessively high number might
+        result in the script getting blocked by the website.
+    destination_folder : str, optional
+        Folder in the current working directory where the output json file
+        should be placed. If None, the file is placed directly in the current
+        working directory. By default None.
+    drop_invalid : bool, optional
+        If True, only the job posts with a title are kept. Jobs posts might not
+        have a title - and any other info - if the script is blocked by the
+        website. By default True.
+
+    Returns
+    -------
+    dict[str, JobPost]
+        Dictionary in the form 'job id' : 'job post info', where 'job id' is a
+        string and 'job post info' is a JobPost object.
+    """
     if search is None:
         search = input("Please provide the search terms:\n")
 
     single_url = search_to_url(search)
     pages_urls = url_to_pages(single_url, numb_pages)
 
-    i = 0
     job_ids = set()
     print("Looking for job ids...")
     for url in tqdm(pages_urls):
